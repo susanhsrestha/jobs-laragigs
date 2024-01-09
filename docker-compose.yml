@@ -1,0 +1,46 @@
+services:
+    lara-web:
+        build:
+            context: .
+            dockerfile: laravel.Dockerfile
+        ports:
+            - "8080:8000"
+        volumes:
+            - .:/app
+        networks:
+            - lara
+    mysql:
+        image: mysql:8.0
+        command: --default-authentication-plugin=mysql_native_password
+        restart: always
+        container_name: mysql
+        environment:
+            - MYSQL_ROOT_PASSWORD=elina
+            - MYSQL_DATABASE=laravel
+            - MYSQL_USER=docker
+            - MYSQL_PASSWORD=docker
+        ports:
+            - "3306:3306"
+        volumes:
+            - dbdata:/var/lib/mysql
+        networks:
+            - lara
+    phpmyadmin:
+        image: phpmyadmin
+        restart: always
+        links:
+            - mysql
+        ports:
+            - 8090:80
+        environment:
+            - PMA_HOST=mysql
+            - PMA_PORT=3306
+        networks:
+            - lara
+
+volumes:
+    dbdata:
+
+networks:
+    lara:
+        external: true
